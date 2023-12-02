@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}" />
+    <script type="text/javascript" defer src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  </head>
+  <body>
+    {% csrf_token %}
+    <div class="title-container">
+      <h1>레시피를 부탁해</h1>
+    </div>
+
+    <div id="title-gap"></div>
+
+    <div id="wrap">
+      <div class="chat-container">
+        <div class="chat">
+          안녕하세요! <br />가지고 있는 재료를 적어주시면 관련된 레시피를 알려드릴게요.
+        </div>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <form id="chat-form">
+        <input type="text" id="chat-input" autocomplete="off" placeholder="채팅을 입력해주세요" />
+        <button>전송</button>
+      </form>
+    </div>
+
+    <script src="{% static 'main/js/chat.js' %}"></script>
+  </body>
+</html>
