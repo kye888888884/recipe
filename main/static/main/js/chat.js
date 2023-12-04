@@ -10,9 +10,15 @@ let recipe_id = null; // 선택한 레시피의 id
 
 function setResponseWaiting(value) {
     response_waiting = value;
-    const images = document.getElementsByClassName("send-image");
-    for (let i = 0; i < images.length; i++) {
-        images[i].hidden = images[i].hidden ? false : true;
+    const image_active = document.getElementById("send-active");
+    const image_inactive = document.getElementById("send-inactive");
+
+    if (value) {
+        image_active.hidden = true;
+        image_inactive.hidden = false;
+    } else {
+        image_active.hidden = false;
+        image_inactive.hidden = true;
     }
 }
 

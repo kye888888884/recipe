@@ -32,8 +32,8 @@
       <form id="chat-form">
         <input type="text" id="chat-input" autocomplete="off" placeholder="채팅을 입력해주세요" />
         <button>
-          <img src="{% static 'main/images/bi-send.png' %}" class="send-image" />
-          <img src="{% static 'main/images/bi-send-inactive.png' %}" class="send-image" style="cursor:progress" hidden />
+          <img src="{% static 'main/images/bi-send.png' %}" class="send-image" id="send-active" />
+          <img src="{% static 'main/images/bi-send-inactive.png' %}" class="send-image" style="cursor:progress" id="send-inactive" hidden />
         </button>
       </form>
     </div>
