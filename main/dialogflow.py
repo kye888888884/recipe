@@ -5,7 +5,7 @@ import json
 KEY_PATH = 'private_key.json'
 DIALOGFLOW_LANGUAGE_CODE ='ko'
 
-class Intent:
+class Dialogflow:
     def __init__(self, key_path: str, session_id: str = 'me'):
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_path
         with open(key_path) as f:
@@ -38,12 +38,17 @@ class Intent:
         if self.__response is None:
             return "No response"
         return self.__response.query_result.output_contexts
+    
+    def get_parameters(self) -> str:
+        if self.__response is None:
+            return "No response"
+        return [*self.__response.query_result.parameters.values()][0]
 
 if __name__ == "__main__":
-    intent = Intent(KEY_PATH)
+    dlf = Dialogflow(KEY_PATH)
     while True:
         input_text = input("Input: ")
-        data = intent.input(input_text)
+        data = dlf.input(input_text)
         print("Output:", data)
-        print("Intent:", intent.get_intent())
+        print("Intent:", dlf.get_intent())
         # print("context:", intent.get_context())

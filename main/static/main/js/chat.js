@@ -2,21 +2,58 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("chat-input");
 
 let response_waiting = false; // 서버로부터 응답을 받고 있는지 확인하는 변수. true면 채팅을 입력할 수 없음
+let chat_word_delay = 20; // 채팅 단어가 한 글자씩 출력되는 딜레이, 단위: ms
+let current_intent = ""; // 현재 사용자의 의도. Dialogflow에서 인식한 intent를 저장하는 변수
+let recipes = null; // 추천받은 레시피 목록 (top개)
+let recipe = null; // 선택한 레시피
+let recipe_id = null; // 선택한 레시피의 id
+
+function setResponseWaiting(value) {
+    response_waiting = value;
+    const images = document.getElementsByClassName("send-image");
+    for (let i = 0; i < images.length; i++) {
+        images[i].hidden = images[i].hidden ? false : true;
+    }
+}
+
+function scrollBottom() {
+    window.scrollTo(0, document.body.scrollHeight);
+}
 
 function addChat(text, is_user = true) {
     // jquery로 채팅 박스 추가
     query = `<div class='chat${is_user ? " user" : ""}'></div>`;
-    const chatBox = $(query);
-    chatBox.text(text);
-    $(".chat-container").append(chatBox);
+    const chat_box = $(query);
+    if (is_user) chat_box.text(text);
+
+    $(".chat-container").append(chat_box);
     // 채팅 박스 추가 후 스크롤 맨 아래로 내리기
-    window.scrollTo(0, document.body.scrollHeight);
+    scrollBottom();
+    // 채팅 단어가 한 글자씩 출력되는 효과
+    if (!is_user) typingEffect(chat_box, text);
+}
+
+// 채팅 단어가 한 글자씩 출력되는 효과
+function typingEffect(chat_box, text, i = 0) {
+    if (i < text.length) {
+        // 문자가 @면 줄바꿈
+        if (text.charAt(i) == "@") {
+            chat_box.html(chat_box.html() + "<br />");
+        } else chat_box.html(chat_box.html() + text.charAt(i));
+        i++;
+        setTimeout(function () {
+            typingEffect(chat_box, text, i);
+        }, chat_word_delay);
+    } else {
+        setResponseWaiting(false);
+    }
+    scrollBottom();
 }
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     if (input.value && !response_waiting) {
-        response_waiting = true;
+        setResponseWaiting(true);
         addChat(input.value, true);
 
         // csrf 토큰 가져오기
@@ -26,8 +63,32 @@ form.addEventListener("submit", (e) => {
         // formdata 생성
         let formData = new FormData();
         formData.append("message", input.value);
+        formData.append("intent", current_intent);
+        if (recipes) {
+            formData.append("recipes", recipes);
+        }
+        if (recipe) {
+            formData.append("recipe", recipe);
+        }
+        if (recipe_id) {
+            formData.append("recipe_id", recipe_id);
+        }
+        formData.append("csrf", csrftoken);
 
         input.value = "";
+
+        if (current_intent == "recipe") {
+            recipes = null;
+            recipe = null;
+            recipe_id = null;
+        }
+
+        if (current_intent == "recommend") {
+            addChat(
+                "레시피를 적고 있어요. 찾아오느라 오래 걸릴 수 있으니 잠시만 기다려주세요!",
+                false
+            );
+        }
 
         // ajax로 서버에 데이터 전송
         $.ajax({
@@ -40,8 +101,19 @@ form.addEventListener("submit", (e) => {
             contentType: false,
         }).done(function (data) {
             // console.log(data["message"]);
-            addChat(data["message"], false);
-            response_waiting = false;
+            msg = data["message"];
+            if (data["recipes"]) {
+                recipes = data["recipes"];
+            }
+            if (data["recipe"]) {
+                recipe = data["recipe"];
+            }
+            if (data["recipe_id"]) {
+                recipe_id = data["recipe_id"];
+            }
+            addChat(msg, false);
+            current_intent = data["intent"];
+            console.log(current_intent);
         });
     }
 });

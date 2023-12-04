@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'main/css/style.css' %}" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400&display=swap');
+    </style>
+    {% comment %} <link rel="stylesheet" href="{% static 'main/css/desktop-1.css' %}" /> {% endcomment %}
     <script type="text/javascript" defer src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   </head>
   <body>
     {% csrf_token %}
     <div class="title-container">
-      <h1>레시피를 부탁해</h1>
+      <img src="{% static 'main/images/logo.png' %}" id="logo-image" />
     </div>
 
     <div id="title-gap"></div>
@@ -27,7 +31,10 @@
     <div class="input-container">
       <form id="chat-form">
         <input type="text" id="chat-input" autocomplete="off" placeholder="채팅을 입력해주세요" />
-        <button>전송</button>
+        <button>
+          <img src="{% static 'main/images/bi-send.png' %}" class="send-image" />
+          <img src="{% static 'main/images/bi-send-inactive.png' %}" class="send-image" style="cursor:progress" hidden />
+        </button>
       </form>
     </div>
 
