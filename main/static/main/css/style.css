@@ -70,6 +70,10 @@ button {
     background-color: #eee;
 }
 
+.chat:not(.user) {
+    min-width: 20%;
+}
+
 #chat-input {
     font-family: "Noto Sans KR", sans-serif;
     padding: 10px;

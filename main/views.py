@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.http import StreamingHttpResponse
 from .dialogflow import Dialogflow
 from .models import Recipe, Ingredient, Food
 from .gpt import GPT
@@ -199,7 +200,7 @@ def chat(request):
             amounts, is_calculated = get_amounts(user_recipe_id, int(context))
             ingredients_text = ""
             for i, ingredient in enumerate(ingredients):
-                ingredients_text += f"{ingredient}: {amounts[i]} \n"
+                ingredients_text += f"{ingredient} {amounts[i]} \n"
             # print(ingredients_text)
             recipe_context = "재료 목록: \n" + ingredients_text + recipe_context
 
@@ -209,10 +210,13 @@ def chat(request):
             data += "@@"
 
             gpt = GPT()
-            chat = gpt.chat(recipe_context).replace("\n", "@")
-            data += chat
+            response = StreamingHttpResponse(gpt.chat(recipe_context), content_type="text/event-stream")
+            response['X-Accel-Buffering'] = 'no'  # Disable buffering in nginx
+            response['Cache-Control'] = 'no-cache'  # Ensure clients don't cache the data
+            # chat = gpt.chat(recipe_context).replace("\n", "@")
+            # data += chat
             
-            print(data)
+            return response
 
         
         return JsonResponse({"message": data, "intent": intent}, safe=False)
