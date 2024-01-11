@@ -2,7 +2,7 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("chat-input");
 
 let response_waiting = false; // 서버로부터 응답을 받고 있는지 확인하는 변수. true면 채팅을 입력할 수 없음
-let chat_word_delay = 20; // 채팅 단어가 한 글자씩 출력되는 딜레이, 단위: ms
+let chat_word_delay = 5; // 채팅 단어가 한 글자씩 출력되는 딜레이, 단위: ms
 let current_intent = ""; // 현재 사용자의 의도. Dialogflow에서 인식한 intent를 저장하는 변수
 let recipes = null; // 추천받은 레시피 목록 (top개)
 let recipe = null; // 선택한 레시피
@@ -111,6 +111,8 @@ form.addEventListener("submit", (e) => {
             xmlhttp.open("POST", url, true);
             xmlhttp.setRequestHeader("X-CSRFToken", csrftoken);
             xmlhttp.send(formData);
+
+            current_intent = "";
         } else {
             $.ajax({
                 type: "POST",
