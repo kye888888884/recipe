@@ -10,6 +10,7 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400&display=swap');
     </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     {% comment %} <link rel="stylesheet" href="{% static 'main/css/desktop-1.css' %}" /> {% endcomment %}
     <script type="text/javascript" defer src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   </head>
@@ -30,6 +31,7 @@
     </div>
 
     <div class="input-container">
+      <button id="btn-record" onclick="startRecord()"><span id="record-icon" class="material-symbols-outlined">mic</span></button>
       <form id="chat-form">
         <input type="text" id="chat-input" autocomplete="off" placeholder="채팅을 입력해주세요" />
         <button>
@@ -40,5 +42,7 @@
     </div>
 
     <script src="{% static 'main/js/chat.js' %}"></script>
+    <script src="{% static 'main/js/speech.js' %}"></script>
+    <script src="{% static 'main/js/voice.js' %}"></script>
   </body>
 </html>

@@ -79,6 +79,8 @@ button {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 10px;
+    width: 60%;
+    max-width: 600px;
     transition: box-shadow 0.3s ease-in-out;
 }
 
@@ -99,5 +101,42 @@ button {
 }
 
 .send-image:hover {
+    cursor: pointer;
+}
+
+#btn-record {
+    position: relative;
+    top: 4px;
+    width: 60px;
+    height: 60px;
+    color: white;
+    border-radius: 50%;
+    background-color: #80d34c;
+    margin: 0 0 20px 5px;
+}
+
+.btn-pulse {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(128, 211, 76, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(128, 211, 76, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(128, 211, 76, 0);
+    }
+}
+
+#btn-record span {
+    position: relative;
+    top: 2px;
+    font-size: 2rem;
+}
+
+#btn-record:hover {
     cursor: pointer;
 }

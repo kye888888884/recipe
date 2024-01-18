@@ -148,6 +148,8 @@ def chat(request):
         intent = get_intent_index(dlf.get_intent())
         # print(intent)
 
+        response = {}
+
         # 재료 입력 인식
         if intent == "ingredient":
             context = dlf.get_parameters()
@@ -170,7 +172,10 @@ def chat(request):
                         data += f"{i+1}. {recipe}" + "@"
                     data += "@마음에 드는 레시피의 번호를 입력해주세요!"
             
-            return JsonResponse({"message": data, "intent": intent, "recipes": result}, safe=False)
+            response["message"] = data
+            response["intent"] = intent
+            response["recipes"] = result
+            return JsonResponse(response, safe=False)
 
             # print(context)
         
@@ -186,7 +191,11 @@ def chat(request):
                 recipe = user_recipes[recipe_index]
                 data = f"{recipe_index + 1}번({recipe})의 레시피를 보여드릴게요!@" + data
             
-            return JsonResponse({"message": data, "intent": intent, "recipe": recipe, "recipe_id": get_recipe_index(recipe)}, safe=False)
+            response["message"] = data
+            response["intent"] = intent
+            response["recipes"] = user_recipes
+            response["recipe_id"] = get_recipe_index(recipe)
+            return JsonResponse(response, safe=False)
         
         if intent == "inbun":
             context = dlf.get_parameters()
@@ -218,5 +227,4 @@ def chat(request):
             
             return response
 
-        
-        return JsonResponse({"message": data, "intent": intent}, safe=False)
+        return JsonResponse(response, safe=False)
