@@ -8,11 +8,12 @@ from .gpt import GPT
 intents = {
     "welcome": "Default Welcome Intent",
     "fallback": "Default Fallback Intent",
-    "ingredient": "recipe_plz",
-    "recommend": "recipe_recommendation -answer positive",
-    "inbun": "recipe_plz - inbun",
-    "recipe_positive": "recipe_answer -positive",
-    "recipe_negative": "recipe_answer -negative",
+    "ingredient": "1.recipe_plz",
+    "main_ingredient": "2.recipe_plz - custom",
+    "recommend": "3.recipe_recommendation -answer positive",
+    "inbun": "4.recipe_plz - inbun",
+    "recipe_positive": "5.recipe_answer -positive",
+    "recipe_negative": "5.recipe_answer -negative",
 }
 
 TOP = 10
@@ -142,11 +143,12 @@ def chat(request):
         dlf = Dialogflow('private_key.json', session_id=csrf)
         # 입력 전
         intent = get_intent_index(dlf.get_intent())
+        print(intent)
 
         # 입력 후
         data = dlf.input(msg)
         intent = get_intent_index(dlf.get_intent())
-        # print(intent)
+        print(intent)
 
         response = {}
 
@@ -170,7 +172,7 @@ def chat(request):
                     data += "@@"
                     for i, recipe in enumerate(result):
                         data += f"{i+1}. {recipe}" + "@"
-                    data += "@마음에 드는 레시피의 번호를 입력해주세요!"
+                    data += "@마음에 드는 레시피의 번호를 입력해주세요!@꼭 들어가야 하는 재료가 있다면 재료를 다시 입력해주세요."
             
             response["message"] = data
             response["intent"] = intent

@@ -8,6 +8,13 @@ let recipes = null; // 추천받은 레시피 목록 (top개)
 let recipe = null; // 선택한 레시피
 let recipe_id = null; // 선택한 레시피의 id
 
+window.onload = function () {
+    addChat(
+        "안녕하세요!@가지고 있는 재료를 적어주시면 관련된 레시피를 알려드릴게요.",
+        false
+    );
+};
+
 function setResponseWaiting(value) {
     response_waiting = value;
     const image_active = document.getElementById("send-active");
