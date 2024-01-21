@@ -26,9 +26,12 @@
       <div class="chat-container"></div>
     </div>
 
-    <div class="input-container">
+    <div class="btn-additional-container">
       <button class="btn-additional" id="btn-record" onclick="startRecord()"><span id="record-icon" class="material-symbols-outlined">mic</span></button>
-      <button class="btn-additional" id="btn-shoot" onclick="shoot()"><span id="record-icon" class="material-symbols-outlined">photo_camera</span></button>
+      <button class="btn-additional" id="btn-shoot" onclick="showShooting()"><span id="record-icon" class="material-symbols-outlined">photo_camera</span></button>
+    </div>
+
+    <div class="input-container">
       <form id="chat-form">
         <input type="text" id="chat-input" autocomplete="off" placeholder="채팅을 입력해주세요" />
         <button>
@@ -36,10 +39,31 @@
           <img src="{% static 'main/images/bi-send-inactive.png' %}" class="send-image" style="cursor:progress" id="send-inactive" hidden />
         </button>
       </form>
+      <img id="pic" style="width:100%;" />
+    </div>
+
+    <div class="shoot-container">
+      <input type="file" id="input-photo" accept="image/*" capture="camera" hidden />
+      <label class="btn-in-shoot" for="input-photo">
+        <span id="shoot-icon" class="material-symbols-outlined">photo_library</span>
+        <div>사진 선택하기</div>
+      </label>
+      <button class="btn-in-shoot" onclick="showCam()">
+        <span id="shoot-icon" class="material-symbols-outlined">filter_center_focus</span>
+        <div>촬영하기</div>
+      </button>
+    </div>
+
+    <div class="cam-container">
+      <video id="video" autoplay></video>
+      <div class="cam-button-container">
+        <button class="btn-cam" id="btn-cam" onclick="takePic()"><span id="shoot-icon" class="material-symbols-outlined">camera_alt</span></button>
+        <button class="btn-cam" id="btn-cam" onclick="closeCam()"><span id="shoot-icon" class="material-symbols-outlined">close</span></button>
+      </div>
     </div>
 
     <script src="{% static 'main/js/chat.js' %}"></script>
     <script src="{% static 'main/js/speech.js' %}"></script>
-    <script src="{% static 'main/js/voice.js' %}"></script>
+    <script src="{% static 'main/js/picture.js' %}"></script>
   </body>
 </html>

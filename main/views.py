@@ -4,6 +4,11 @@ from django.http import StreamingHttpResponse
 from .dialogflow import Dialogflow
 from .models import Recipe, Ingredient, Food
 from .gpt import GPT
+from .apps import MainConfig
+import base64
+from ultralytics.engine.results import Results
+import random
+import os
 
 intents = {
     "welcome": "Default Welcome Intent",
@@ -15,6 +20,20 @@ intents = {
     "inbun": "4_inbun",
     "recipe_positive": "5_recipe_positive",
     "recipe_negative": "5_recipe_negative",
+}
+
+index_to_ingredient = {
+    0: 'apple', 1: 'banana', 2: 'beef', 3: 'blueberries', 4: 'broccoli', 5: 'butter', 6: 'carrot', 7: 'cauliflower', 8: 'cheese', 9: 'chicken', 10: 'chocolate', 11: 'corn', 12: 'cream_cheese', 13: 'cucumber', 14: 'dates', 15: 'eggplant', 16: 'eggs', 17: 'ginger', 18: 'grapes', 19: 'green_beans', 20: 'green_bell_pepper', 21: 'green_chillies', 22: 'ground_beef', 23: 'heavy_cream', 24: 'kiwi', 25: 'lemon', 26: 'lettuce', 27: 'lime', 28: 'milk', 29: 'mineral_water', 30: 'mint', 31: 'mushrooms', 32: 'olives', 33: 'onion', 34: 'orange', 35: 'parsley', 36: 'peach', 37: 'peas', 38: 'pickles', 39: 'potato', 40: 'radish', 41: 'red_bell_pepper', 42: 'red_cabbage', 43: 'red_grapes', 44: 'red_onion', 45: 'salami', 46: 'sausage', 47: 'shrimp', 48: 'spinach', 49: 'spring_onion', 50: 'strawberries', 51: 'sweet_potato', 52: 'tangerine', 53: 'tomato', 54: 'tomato_paste', 55: 'yellow_bell_pepper', 56: 'yoghurt', 57: 'zucchini'
+}
+
+index_to_ingredient_kor = {
+    0: '사과', 1: '바나나', 2: '소고기', 3: '블루베리', 4: '브로콜리', 5: '버터', 6: '당근', 7: '콜리플라워',
+    8: '치즈', 9: '닭고기', 10: '초콜릿', 11: '옥수수', 12: '크림치즈', 13: '오이', 14: '대추', 15: '가지', 16: '계란',
+    17: '생강', 18: '포도', 19: '콩', 20: '파프리카', 21: '청 고추', 22: '갈은 소고기', 23: '생크림', 24: '키위', 25: '레몬',
+    26: '상추', 27: '라임', 28: '우유', 29: '미네랄 워터', 30: '민트', 31: '버섯', 32: '올리브', 33: '양파', 34: '오렌지',
+    35: '파슬리', 36: '복숭아', 37: '콩', 38: '피클', 39: '감자', 40: '라디쉬', 41: '빨간파프리카', 42: '적양배추',
+    43: '빨간포도', 44: '적양파', 45: '살라미', 46: '소시지', 47: '새우', 48: '시금치', 49: '파', 50: '딸기', 51: '고구마',
+    52: '감귤', 53: '토마토', 54: '토마토 페이스트', 55: '노란파프리카', 56: '요거트', 57: '쥬크니'
 }
 
 TOP = 10
@@ -263,3 +282,32 @@ def chat(request):
             data["intent"] = intent
 
         return JsonResponse(data, safe=False)
+
+def upload(request):
+    if request.method == "POST":
+        id = random.randint(0, 1000)
+        img = request.POST.get('image')
+        # base64 디코딩
+        # print(img)
+        img = base64.b64decode(img)
+        # 이미지 저장하기
+        with open(f'images/img{id}.jpg', 'wb') as f:
+            f.write(img)
+        
+        # 이미지 분석
+        model = MainConfig.model
+        results = model.inference(f'images/img{id}.jpg')
+
+        names = []
+        print("type:", type(results))
+        for result in results:
+            index = int(result.boxes.cls.tolist()[0])
+            names.append(index_to_ingredient_kor[index])
+        
+        names = list(set(names))
+        print("names:", names)
+
+        # 이미지 삭제
+        os.remove(f'images/img{id}.jpg')
+
+        return JsonResponse({"message": "success", "names": names}, safe=False)

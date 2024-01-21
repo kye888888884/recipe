@@ -2,7 +2,7 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("chat-input");
 
 let response_waiting = false; // 서버로부터 응답을 받고 있는지 확인하는 변수. true면 채팅을 입력할 수 없음
-let chat_word_delay = 5; // 채팅 단어가 한 글자씩 출력되는 딜레이, 단위: ms를 저장하는 변수
+let chat_word_delay = 20; // 채팅 단어가 한 글자씩 출력되는 딜레이, 단위: ms를 저장하는 변수
 let data = {
     prev_intent: "", // 이전 intent
     intent: "", // 현재 intent
@@ -13,6 +13,8 @@ let data = {
     ingredients: null, // 사용자가 입력한 재료 목록
     main_ingredients: null, // 사용자가 입력한 주재료 목록
 };
+// csrf 토큰 가져오기
+let csrftoken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
 
 window.onload = function () {
     addChat(
@@ -39,7 +41,7 @@ function scrollBottom() {
     window.scrollTo(0, document.body.scrollHeight);
 }
 
-function addChat(text, is_user = true, is_server = true) {
+function addChat(text, is_user = true, is_server = true, custom = false) {
     // jquery로 채팅 박스 추가
     query = `<div class='chat${is_user ? " user" : ""}'></div>`;
     const chat_box = $(query);
@@ -47,13 +49,18 @@ function addChat(text, is_user = true, is_server = true) {
 
     $(".chat-container").append(chat_box);
     // 채팅 박스 추가 후 스크롤 맨 아래로 내리기
-    scrollBottom();
     // 채팅 단어가 한 글자씩 출력되는 효과
-    if (!is_user) typingEffect(chat_box, text, 0, is_server);
+    if (!is_user) typingEffect(chat_box, text, 0, is_server, custom);
+    else {
+        if (custom) {
+            chat_box.append(custom);
+        }
+    }
+    scrollBottom();
 }
 
 // 채팅 단어가 한 글자씩 출력되는 효과
-function typingEffect(chat_box, text, i = 0, is_server = true) {
+function typingEffect(chat_box, text, i = 0, is_server = true, custom = false) {
     if (i < text.length) {
         // 문자가 @면 줄바꿈
         if (text.charAt(i) == "@") {
@@ -61,10 +68,13 @@ function typingEffect(chat_box, text, i = 0, is_server = true) {
         } else chat_box.html(chat_box.html() + text.charAt(i));
         i++;
         setTimeout(function () {
-            typingEffect(chat_box, text, i, is_server);
+            typingEffect(chat_box, text, i, is_server, custom);
         }, chat_word_delay);
     } else {
         if (is_server) setResponseWaiting(false);
+        if (custom) {
+            chat_box.append(custom);
+        }
     }
     scrollBottom();
 }
@@ -74,10 +84,6 @@ form.addEventListener("submit", (e) => {
     if (input.value && !response_waiting) {
         setResponseWaiting(true);
         addChat(input.value, true);
-
-        // csrf 토큰 가져오기
-        let csrftoken = document.getElementsByName("csrfmiddlewaretoken")[0]
-            .value;
 
         // formdata 생성
         let formData = new FormData();

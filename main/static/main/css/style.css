@@ -1,3 +1,9 @@
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -74,6 +80,12 @@ button {
     min-width: 20%;
 }
 
+.chat img {
+    max-height: 200px;
+    border-radius: 10px;
+    max-width: 100%;
+}
+
 #chat-input {
     font-family: "Noto Sans KR", sans-serif;
     padding: 10px;
@@ -140,4 +152,175 @@ button {
 
 .btn-additional:hover {
     cursor: pointer;
+}
+
+.btn-additional-container {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    pointer-events: none;
+    display: flex;
+    flex-direction: row;
+    /* 플렉스 자식을 오른쪽으로 붙이기 */
+    align-items: flex-end;
+    padding: 20px;
+    z-index: 50;
+}
+
+@media (max-width: 800px) {
+    .btn-additional-container {
+        bottom: 80px;
+        right: 0px;
+        flex-direction: column;
+    }
+}
+
+.btn-additional {
+    pointer-events: all;
+}
+
+/* 사진 버튼 */
+.shoot-container {
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff4;
+    z-index: 100;
+    gap: 10px;
+}
+
+.btn-in-shoot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 10px;
+    width: 40%;
+    max-width: 200px;
+    height: 20%;
+    max-height: 200px;
+    background-color: #80d34c;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn-in-shoot:hover {
+    cursor: pointer;
+}
+
+#shoot-icon {
+    position: relative;
+    top: 2px;
+    font-size: 6rem;
+}
+
+/* 캠 촬영 */
+.cam-container {
+    position: fixed;
+    display: none;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff7;
+    z-index: 200;
+    gap: 10px;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    max-width: 95%;
+    max-height: 80%;
+    border-radius: 10px;
+    background-color: #468221;
+    box-shadow: #888 0px 0px 10px;
+}
+
+.cam-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-top: 10px;
+}
+
+.btn-cam {
+    padding: 10px;
+    border-radius: 20%;
+    background-color: #80d34c;
+    border: none;
+    height: 100%;
+    color: white;
+    box-shadow: #888 0px 10px 0px;
+    text-shadow: #888 0px -3px 0px;
+}
+
+/* 재료 인식 */
+
+.ingredient-container {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff4;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ingredient {
+    flex: 1;
+    min-width: fit-content;
+    padding: 2px 10px;
+    border-radius: 5px;
+    background-color: #80d34c;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    text-align: center;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.ingredient:hover {
+    cursor: pointer;
+    background-color: #468221;
+}
+
+.selected {
+    color: #999;
+    background-color: #333;
+}
+
+.selected:hover {
+    background-color: #555;
+}
+
+.ingredient-ok {
+    padding: 2px 10px;
+    width: 100%;
+    border-radius: 5px;
+    background-color: #80d34c;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    text-align: center;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.ingredient-ok:hover {
+    cursor: pointer;
+    background-color: #468221;
 }
