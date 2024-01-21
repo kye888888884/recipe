@@ -2,15 +2,21 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("chat-input");
 
 let response_waiting = false; // 서버로부터 응답을 받고 있는지 확인하는 변수. true면 채팅을 입력할 수 없음
-let chat_word_delay = 5; // 채팅 단어가 한 글자씩 출력되는 딜레이, 단위: ms
-let current_intent = ""; // 현재 사용자의 의도. Dialogflow에서 인식한 intent를 저장하는 변수
-let recipes = null; // 추천받은 레시피 목록 (top개)
-let recipe = null; // 선택한 레시피
-let recipe_id = null; // 선택한 레시피의 id
+let chat_word_delay = 5; // 채팅 단어가 한 글자씩 출력되는 딜레이, 단위: ms를 저장하는 변수
+let data = {
+    prev_intent: "", // 이전 intent
+    intent: "", // 현재 intent
+    recommended_recipes: null, // 추천받은 레시피 목록 (top개)
+    recipe: null, // 선택한 레시피 이름
+    recipe_id: null, // 선택한 레시피 id
+    inbun: null, // 인분
+    ingredients: null, // 사용자가 입력한 재료 목록
+    main_ingredients: null, // 사용자가 입력한 주재료 목록
+};
 
 window.onload = function () {
     addChat(
-        "안녕하세요!@가지고 있는 재료를 적어주시면 관련된 레시피를 알려드릴게요.",
+        "안녕하세요! 가지고 있는 재료를 적어주시면 관련된 레시피를 알려드릴게요.@또는 우측 하단 촬영 버튼을 눌러서 재료 사진을 찍어주세요!",
         false
     );
 };
@@ -76,29 +82,35 @@ form.addEventListener("submit", (e) => {
         // formdata 생성
         let formData = new FormData();
         formData.append("message", input.value);
-        formData.append("intent", current_intent);
-        if (recipes) {
-            formData.append("recipes", recipes);
-        }
-        if (recipe) {
-            formData.append("recipe", recipe);
-        }
-        if (recipe_id) {
-            formData.append("recipe_id", recipe_id);
-        }
         formData.append("csrf", csrftoken);
+        for (let key in data) {
+            formData.append(key, data[key]);
+        }
 
         input.value = "";
 
-        if (current_intent == "recipe") {
-            recipes = null;
-            recipe = null;
-            recipe_id = null;
-        }
+        // data 초기화
+        // if (data["intent"] == "inbun") {
+        //     data["prev_intent"] = "";
+        //     data["intent"] = "";
+        //     data["recommended_recipes"] = null;
+        //     data["recipe"] = null;
+        //     data["recipe_id"] = null;
+        //     data["ingredients"] = null;
+        //     data["main_ingredients"] = null;
+        // }
 
         // ajax로 서버에 데이터 전송
 
-        if (current_intent == "recommend") {
+        if (data["intent"] == "recommend_positive") {
+            data["intent"] = "after_recommend";
+
+            addChat(
+                `잠시만요! 곧 ${data["recipe"]} 레시피를 알려드릴게요.`,
+                false,
+                false
+            );
+
             let xmlhttp = new XMLHttpRequest();
             url = "/chat/";
 
@@ -118,8 +130,6 @@ form.addEventListener("submit", (e) => {
             xmlhttp.open("POST", url, true);
             xmlhttp.setRequestHeader("X-CSRFToken", csrftoken);
             xmlhttp.send(formData);
-
-            current_intent = "";
         } else {
             $.ajax({
                 type: "POST",
@@ -129,20 +139,31 @@ form.addEventListener("submit", (e) => {
                 data: formData,
                 processData: false,
                 contentType: false,
-            }).done(function (data) {
+            }).done(function (res) {
+                // console.log(res);
+                msg = res["message"];
+                data["prev_intent"] = res["prev_intent"];
+                data["intent"] = res["intent"];
+                if (res["recommended_recipes"]) {
+                    data["recommended_recipes"] = res["recommended_recipes"];
+                }
+                if (res["recipe"]) {
+                    data["recipe"] = res["recipe"];
+                }
+                if (res["recipe_id"]) {
+                    data["recipe_id"] = res["recipe_id"];
+                }
+                if (res["inbun"]) {
+                    data["inbun"] = res["inbun"];
+                }
+                if (res["ingredients"]) {
+                    data["ingredients"] = res["ingredients"];
+                }
+                if (res["main_ingredients"]) {
+                    data["main_ingredients"] = res["main_ingredients"];
+                }
                 console.log(data);
-                msg = data["message"];
-                if (data["recipes"]) {
-                    recipes = data["recipes"];
-                }
-                if (data["recipe"]) {
-                    recipe = data["recipe"];
-                }
-                if (data["recipe_id"]) {
-                    recipe_id = data["recipe_id"];
-                }
                 addChat(msg, false);
-                current_intent = data["intent"];
                 // console.log(current_intent);
             });
         }

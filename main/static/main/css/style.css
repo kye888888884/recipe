@@ -105,7 +105,7 @@ button {
     cursor: pointer;
 }
 
-#btn-record {
+.btn-additional {
     position: relative;
     top: 4px;
     width: 60px;
@@ -132,12 +132,12 @@ button {
     }
 }
 
-#btn-record span {
+.btn-additional span {
     position: relative;
     top: 2px;
     font-size: 2rem;
 }
 
-#btn-record:hover {
+.btn-additional:hover {
     cursor: pointer;
 }
