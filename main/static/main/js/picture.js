@@ -103,7 +103,8 @@ function sendImage(img) {
         },
         success: function (response) {
             // 서버에서 받은 응답 출력
-            console.log(response["names"]);
+            // console.log(response["names"]);
+            // response["names"] = ["파마산치즈", "계란", "사과"];
             if (response["names"].length == 0) {
                 addChat("재료를 인식하지 못했어요.", false);
                 return;
@@ -151,7 +152,7 @@ function sendImage(img) {
                 console.log(names);
             });
             custom.appendChild(btn);
-            console.log(btns);
+            // console.log(btns);
 
             addChat(
                 "인식한 재료를 확인해주세요!@잘못 인식된 재료가 있으면 눌러서 삭제해주세요.",

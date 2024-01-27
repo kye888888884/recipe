@@ -106,7 +106,7 @@ def get_ingredient_index(ingredient: str):
 
 def search_recipe(ingredients, main=None, top=20):
     # 각 재료의 id를 찾음
-    print(ingredients)
+    # print(ingredients)
 
     ingr_indexes = []
     for ingredient in ingredients:
@@ -120,7 +120,6 @@ def search_recipe(ingredients, main=None, top=20):
             main_index = get_ingredient_index(main_ingredient)
             if main_index != -1:
                 main_indexes.append(int(main_index))
-    # print(ingr_indexes)
 
     # 재료가 없을 경우
     if len(ingr_indexes) == 0:
@@ -137,11 +136,22 @@ def search_recipe(ingredients, main=None, top=20):
         for recipe_ingredient in recipe_ingredients:
             recipe_id = int(recipe_ingredient.recipe_id)
             if recipe_id in recommend_recipes:
-                if main is not None and ingr_index in main_indexes:
-                    recommend_recipes[recipe_id] += 100
                 recommend_recipes[recipe_id] += 1
             else:
                 recommend_recipes[recipe_id] = 1
+    
+    # 주재료일 경우 가중치를 더 높임
+    if main is not None:
+        for ingr_index in main_indexes:
+            recipe_ingredients = Ingredient.objects.filter(food_id=ingr_index)
+            if len(recipe_ingredients) == 0:
+                continue
+            for recipe_ingredient in recipe_ingredients:
+                recipe_id = int(recipe_ingredient.recipe_id)
+                if recipe_id in recommend_recipes:
+                    recommend_recipes[recipe_id] += 100
+                else:
+                    recommend_recipes[recipe_id] = 100
 
     # 가장 많이 포함하는 레시피를 순으로 정렬
     recipe_vectors = []
@@ -154,12 +164,19 @@ def search_recipe(ingredients, main=None, top=20):
     recipe_names = []
     for i in range(min(top, len(recipe_vectors))):
         recipe_id = int(recipe_vectors[i][0])
-        print(recipe_id)
-        print(type(recipe_id))
+        # print(recipe_id)
         recipe = Recipe.objects.filter(id=recipe_id)
-        print(type(recipe))
-        print(len(recipe))
-        recipe_names.append(recipe[0].name) #2054
+        # print(recipe.count())
+        # print(type(recipe.first()))
+        # print(len(recipe))
+
+        # recipe = QuerySet()
+        # recipe.first()
+        try:
+            recipe_names.append(recipe[0].name)
+        except:
+            print("error:",recipe_id)
+            continue
 
     return recipe_names
 
@@ -256,7 +273,8 @@ def chat(request):
             # print("레시피:", recipe_id)
             # print("인분:", inbun)
             
-            recipe_context = get_recipe_context(inbun)
+            recipe_context = get_recipe_context(recipe_id)
+            # print("레시피:", recipe_context)
             # data = recipe_context + "@"
 
             ingredients = get_ingredients(recipe_id)
