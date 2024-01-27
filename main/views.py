@@ -63,7 +63,7 @@ def get_amounts(recipe_id: int, user_amount=0):
     amounts = recipe.amounts
     amounts = amounts.replace("'", "")[1:-1].split(",")
     people = int(recipe.people)
-    print("기준:", people, "명")
+    # print("기준:", people, "명")
 
     # 인분 계산 없을 때
     if user_amount == 0 or people == 0:
@@ -106,6 +106,8 @@ def get_ingredient_index(ingredient: str):
 
 def search_recipe(ingredients, main=None, top=20):
     # 각 재료의 id를 찾음
+    print(ingredients)
+
     ingr_indexes = []
     for ingredient in ingredients:
         ingr_index = get_ingredient_index(ingredient)
@@ -151,9 +153,13 @@ def search_recipe(ingredients, main=None, top=20):
     # 상위 top개의 레시피를 추천
     recipe_names = []
     for i in range(min(top, len(recipe_vectors))):
-        recipe_id = recipe_vectors[i][0]
-        recipe = Recipe.objects.filter(id=recipe_id)[0]
-        recipe_names.append(recipe.name)
+        recipe_id = int(recipe_vectors[i][0])
+        print(recipe_id)
+        print(type(recipe_id))
+        recipe = Recipe.objects.filter(id=recipe_id)
+        print(type(recipe))
+        print(len(recipe))
+        recipe_names.append(recipe[0].name) #2054
 
     return recipe_names
 
@@ -171,19 +177,19 @@ def chat(request):
         del data['csrf']
         data['message'] = ""
 
-        print(data)
+        # print(data)
 
         dlf = Dialogflow('private_key.json', session_id=csrf)
         # 입력 전
         intent = data['prev_intent'][0]
-        print("prev:", intent)
+        # print("prev:", intent)
         data['prev_intent'] = data["intent"]
 
         # 입력 후
         output = dlf.input(msg)
-        print("output:", output)
+        # print("output:", output)
         intent = get_intent_index(dlf.get_intent())
-        print("curr:", intent)
+        # print("curr:", intent)
 
         # 재료 입력 인식
         if intent == "ingredient" or intent == "main_ingredient":
@@ -193,7 +199,7 @@ def chat(request):
                 data["ingredients"] = context
             else:
                 data["main_ingredients"] = context
-            print("재료:", context)
+            # print("재료:", context)
 
             result = []
             # 재료가 없을 경우
@@ -299,13 +305,13 @@ def upload(request):
         results = model.inference(f'images/img{id}.jpg')
 
         names = []
-        print("type:", type(results))
+        # print("type:", type(results))
         for result in results:
             index = int(result.boxes.cls.tolist()[0])
             names.append(index_to_ingredient_kor[index])
         
         names = list(set(names))
-        print("names:", names)
+        # print("names:", names)
 
         # 이미지 삭제
         os.remove(f'images/img{id}.jpg')

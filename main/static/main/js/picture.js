@@ -76,6 +76,12 @@ function takePic() {
     var img = document.createElement("img");
     img.src = canvas.toDataURL();
     img.alt = "사진";
+    if (img.width > 800) {
+        img.width = 800;
+    }
+    if (img.height > 800) {
+        img.height = 800;
+    }
     // 이미지 로드가 완료되면
     img.onload = function () {
         // base64로 인코딩
