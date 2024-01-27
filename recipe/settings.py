@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2mfhf!u_-@8unqa@^2rj*)in!)+n042jq#k%^kk70$6-g(r2*1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['recipe.kyhyk.com', 'localhost']
 
@@ -117,8 +117,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'static'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+    BASE_DIR / 'main/static'
 ]
 
 # Default primary key field type
